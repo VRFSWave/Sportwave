@@ -19,27 +19,26 @@
             height: 100vh;
             text-align: center;
             position: relative;
-            overflow: hidden; /* Prevent scrolling */
+            overflow: hidden;
         }
         .logo {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 120px;
+            top: 30px;
+            left: 30px;
+            width: 150px;
             height: auto;
         }
         .title-image {
             width: 600px;
             height: auto;
-            margin-top: 70px; /* Adjusted for logo */
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             position: relative;
             z-index: 2;
         }
         .content {
             width: 90%;
             max-width: 1200px;
-            height: 500px; /* Adjusted height to fit content */
+            height: 700px;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
             overflow: hidden;
@@ -63,31 +62,14 @@
             height: 100%;
             border-radius: 15px;
         }
-        .discord-btn {
-            background-color: #7289da; /* Discord blue */
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            padding: 15px 30px;
-            border-radius: 30px;
-            border: none;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            z-index: 3;
-        }
-        .discord-btn:hover {
-            background-color: #5b6eae; /* Darker blue on hover */
-        }
         .footer {
-            position: relative;
+            position: absolute;
             bottom: 20px;
             left: 0;
             right: 0;
             text-align: center;
             font-size: 14px;
             color: #aaa;
-            padding: 20px;
         }
         .footer a {
             color: #f8b500;
@@ -111,11 +93,6 @@
             autoplay: true
         });
     </script>
-
-    <!-- Discord Button -->
-    <a href="https://discord.gg/6hnTt6xqvh" target="_blank">
-        <button class="discord-btn">Join our Discord</button>
-    </a>
 
     <div class="footer">
         <p>&copy; 2025 Sportwave. All rights reserved. <a href="#">Terms</a> | <a href="#">Privacy</a></p>
