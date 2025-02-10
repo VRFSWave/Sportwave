@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Twitch Stream</title>
+    <script src="https://embed.twitch.tv/embed/v1.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #18181b;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        #twitch-embed {
+            width: 80%;
+            height: 600px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Watch My Twitch Stream</h1>
+    <div id="twitch-embed"></div>
+    <script>
+        new Twitch.Embed("twitch-embed", {
+            width: "80%",
+            height: 600,
+            channel: "mulletstv",
+            layout: "video",
+            autoplay: true
+        });
+    </script>
+</body>
+</html>
