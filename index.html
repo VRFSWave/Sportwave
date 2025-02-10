@@ -21,15 +21,17 @@
             position: relative;
             overflow: hidden;
         }
-        h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 100px;
+            height: auto;
+        }
+        .title-image {
+            width: 300px;
+            height: auto;
             margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: linear-gradient(to right, #f8b500, #ffdd00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             position: relative;
             z-index: 2;
         }
@@ -62,7 +64,8 @@
 </head>
 <body>
     <div class="stadium-overlay"></div>
-    <h1>Sportwave Live Stream</h1>
+    <img src="https://i.ibb.co/4nZNLfmB/2-1.png" alt="Logo" class="logo">
+    <img src="https://i.ibb.co/q30Vg4hV/1-1.png" alt="Sportwave Live Stream" class="title-image">
     <div id="stream" class="content">
         <div id="twitch-embed"></div>
     </div>
