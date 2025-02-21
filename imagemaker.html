@@ -83,8 +83,8 @@
             margin-top: 15px;
             background: black;
             width: 100%;
-            max-width: 700px;
-            height: auto;
+            max-width: 600px;
+            height: 400px;
             border-radius: 8px;
         }
 
@@ -161,7 +161,7 @@
         </select>
 
         <button onclick="generateGraphic()">Generate Graphic</button>
-        <canvas id="canvas" width="60" height="40"></canvas>
+        <canvas id="canvas" width="600" height="400"></canvas>
         <button onclick="downloadImage()">Download Graphic</button>
     </div>
 
@@ -223,7 +223,7 @@
             ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
             ctx.drawImage(badge2, badge2X, badge2Y, badgeWidth, badgeHeight);
 
-            ctx.font = `8px ${selectedFont}`;
+            ctx.font = `16px ${selectedFont}`;
             ctx.fillStyle = textColor;
             ctx.textAlign = "center";
             ctx.shadowColor = textColor;
