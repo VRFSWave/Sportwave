@@ -102,11 +102,19 @@
             // Draw background image
             ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-            // Draw the first badge on the left
-            ctx.drawImage(badge1, 50, 100, 200, 200);
+            // Define badge size (same for both)
+            const badgeWidth = 180;
+            const badgeHeight = 180;
 
-            // Draw the second badge on the right
-            ctx.drawImage(badge2, 350, 100, 200, 200);
+            // Define positions for badges
+            const badge1X = 100;
+            const badge1Y = 110;
+            const badge2X = 320;
+            const badge2Y = 110;
+
+            // Draw both badges with the same size
+            ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
+            ctx.drawImage(badge2, badge2X, badge2Y, badgeWidth, badgeHeight);
         }
 
         // Allow user to download the generated graphic
