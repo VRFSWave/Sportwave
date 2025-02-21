@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Badge Graphic Maker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        canvas {
+            border: 1px solid #000;
+            margin-top: 20px;
+            background-color: #fff;
+        }
+        .container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Football Badge Graphic Maker</h1>
+        <p>Upload two football club badges to generate a graphic.</p>
+        <input type="file" id="badge1" accept="image/*"><br>
+        <input type="file" id="badge2" accept="image/*"><br>
+        <button onclick="generateGraphic()">Generate Graphic</button><br><br>
+        
+        <canvas id="canvas" width="600" height="400"></canvas><br><br>
+        <button onclick="downloadImage()">Download Graphic</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let badge1 = null;
+        let badge2 = null;
+
+        // Event listeners for the file inputs
+        document.getElementById('badge1').addEventListener('change', handleFileSelect);
+        document.getElementById('badge2').addEventListener('change', handleFileSelect);
+
+        // Handle file upload and read image
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    if (event.target.id === 'badge1') {
+                        badge1 = img;
+                    } else if (event.target.id === 'badge2') {
+                        badge2 = img;
+                    }
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Generate the graphic on the canvas
+        function generateGraphic() {
+            if (!badge1 || !badge2) {
+                alert('Please upload both badges.');
+                return;
+            }
+
+            // Clear the canvas before drawing new images
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the first badge on the left
+            ctx.drawImage(badge1, 50, 100, 200, 200);
+
+            // Draw the second badge on the right
+            ctx.drawImage(badge2, 350, 100, 200, 200);
+        }
+
+        // Allow user to download the generated graphic
+        function downloadImage() {
+            const dataUrl = canvas.toDataURL();
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = 'football_badge_graphic.png';
+            link.click();
+        }
+    </script>
+</body>
+</html>
