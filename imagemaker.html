@@ -21,10 +21,19 @@
         h1 {
             color: #fff;
         }
-        input[type="file"], input[type="text"] {
+        input[type="file"], textarea {
             margin: 10px 0;
             padding: 8px;
             font-size: 16px;
+            width: 90%;
+            max-width: 400px;
+            display: block;
+        }
+        textarea {
+            height: 80px;
+            resize: none;
+            font-family: 'League Spartan', sans-serif;
+            text-align: center;
         }
         button {
             padding: 10px 20px;
@@ -54,7 +63,7 @@
         <p>Upload two football club badges and enter match details.</p>
         <input type="file" id="badge1" accept="image/*"><br>
         <input type="file" id="badge2" accept="image/*"><br>
-        <input type="text" id="customText" placeholder="Enter match details (e.g. Manchester Derby)"><br>
+        <textarea id="customText" placeholder="Enter match details (each line will be centered)"></textarea><br>
         <button onclick="generateGraphic()">Generate Graphic</button><br><br>
         
         <canvas id="canvas" width="600" height="400"></canvas><br><br>
@@ -100,8 +109,9 @@
                 return;
             }
 
-            // Get custom text from input field
+            // Get multi-line text from textarea
             const customText = document.getElementById('customText').value.trim();
+            const textLines = customText.split('\n'); // Split input into lines
 
             // Clear the canvas before drawing new images
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -114,22 +124,26 @@
             const badgeHeight = 180;
 
             // Define positions for badges (spaced further apart)
-            const badge1X = 60;  // Increased distance from left
+            const badge1X = 60;  
             const badge1Y = 100;
-            const badge2X = 360; // Increased distance from right
+            const badge2X = 360; 
             const badge2Y = 100;
 
             // Draw both badges with the same size
             ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
             ctx.drawImage(badge2, badge2X, badge2Y, badgeWidth, badgeHeight);
 
-            // Draw custom text if entered
-            if (customText) {
-                ctx.font = "30px 'League Spartan', sans-serif"; // Set font style
-                ctx.fillStyle = "white"; // Text color
-                ctx.textAlign = "center"; // Center text
-                ctx.fillText(customText, canvas.width / 2, 320); // Position text below badges
-            }
+            // Draw multi-line text
+            ctx.font = "30px 'League Spartan', sans-serif"; 
+            ctx.fillStyle = "white"; 
+            ctx.textAlign = "center";
+
+            const textStartY = 320; // Start Y position for text
+            const lineHeight = 35; // Line spacing
+
+            textLines.forEach((line, index) => {
+                ctx.fillText(line, canvas.width / 2, textStartY + (index * lineHeight));
+            });
         }
 
         // Allow user to download the generated graphic
