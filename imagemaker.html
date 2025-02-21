@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Football Badge Graphic Maker</title>
-    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Orbitron:wght@500&family=Roboto:wght@700&family=Oswald:wght@600&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'League Spartan', sans-serif;
@@ -31,7 +31,6 @@
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            margin-bottom: 10px;
             font-size: 26px;
             color: #ffcc00;
             text-shadow: 0px 0px 10px rgba(255, 204, 0, 0.6);
@@ -40,12 +39,11 @@
         p {
             font-size: 14px;
             color: #bbb;
-            margin-bottom: 20px;
         }
 
-        input[type="file"], textarea {
-            margin: 12px 0;
-            padding: 12px;
+        input, select {
+            margin: 10px;
+            padding: 10px;
             font-size: 16px;
             width: 90%;
             max-width: 420px;
@@ -65,7 +63,7 @@
             text-align: center;
         }
 
-        input[type="file"]:hover, textarea:focus {
+        input:hover, select:hover, textarea:focus {
             border-color: #ffcc00;
             box-shadow: 0px 0px 10px rgba(255, 204, 0, 0.5);
         }
@@ -83,7 +81,6 @@
             max-width: 420px;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 1px;
             transition: 0.3s;
         }
 
@@ -109,6 +106,21 @@
         <input type="file" id="badge1" accept="image/*">
         <input type="file" id="badge2" accept="image/*">
         <textarea id="customText" placeholder="Enter match details (each line will be centered)"></textarea>
+
+        <label for="textColor">Text Color:</label>
+        <input type="color" id="textColor" value="#ffcc00">
+
+        <label for="glowIntensity">Glow Intensity:</label>
+        <input type="range" id="glowIntensity" min="0" max="20" value="8">
+
+        <label for="fontSelect">Choose Font:</label>
+        <select id="fontSelect">
+            <option value="'League Spartan', sans-serif">League Spartan</option>
+            <option value="'Orbitron', sans-serif">Orbitron</option>
+            <option value="'Roboto', sans-serif">Roboto</option>
+            <option value="'Oswald', sans-serif">Oswald</option>
+        </select>
+
         <button onclick="generateGraphic()">Generate Graphic</button>
         <canvas id="canvas" width="900" height="500"></canvas>
         <button onclick="downloadImage()">Download Graphic</button>
@@ -121,7 +133,7 @@
         let badge1 = null;
         let badge2 = null;
         let background = new Image();
-        background.src = 'https://i.ibb.co/MDbx54hm/image.png'; // Canvas background image
+        background.src = 'https://i.ibb.co/MDbx54hm/image.png'; // Canvas background
 
         document.getElementById('badge1').addEventListener('change', handleFileSelect);
         document.getElementById('badge2').addEventListener('change', handleFileSelect);
@@ -152,6 +164,9 @@
 
             const customText = document.getElementById('customText').value.trim();
             const textLines = customText.split('\n'); 
+            const textColor = document.getElementById('textColor').value;
+            const glowIntensity = document.getElementById('glowIntensity').value;
+            const selectedFont = document.getElementById('fontSelect').value;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
@@ -166,11 +181,11 @@
             ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
             ctx.drawImage(badge2, badge2X, badge2Y, badgeWidth, badgeHeight);
 
-            ctx.font = "32px 'League Spartan', sans-serif"; 
-            ctx.fillStyle = "#ffcc00"; 
+            ctx.font = `32px ${selectedFont}`; 
+            ctx.fillStyle = textColor;
             ctx.textAlign = "center";
-            ctx.shadowColor = "#ff9900";
-            ctx.shadowBlur = 8;
+            ctx.shadowColor = textColor;
+            ctx.shadowBlur = glowIntensity;
 
             const textStartY = 400;
             const lineHeight = 38;
