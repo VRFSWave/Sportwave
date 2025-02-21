@@ -45,10 +45,6 @@
         }
         .container {
             text-align: center;
-            background-image: url('https://i.ibb.co/q30Vg4hV/1-1.png');
-            background-repeat: no-repeat;
-            background-position: center;
-            padding-top: 120px;
         }
     </style>
 </head>
@@ -110,11 +106,22 @@
             // Draw background image
             ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-            // Draw branding image at the top
+            // Draw branding image at the top, resized and with outline
             branding = new Image();
             branding.src = 'https://i.ibb.co/q30Vg4hV/1-1.png'; // Branding image URL
             branding.onload = function() {
-                ctx.drawImage(branding, (canvas.width - branding.width) / 2, 20); // Positioning branding image at the top
+                const logoWidth = 200; // Resize the logo to a reasonable size
+                const logoHeight = 100; // Maintain aspect ratio with a fixed height
+                const xPos = (canvas.width - logoWidth) / 2; // Center logo horizontally
+                const yPos = 20; // Position the logo at the top
+
+                // Draw a black outline around the logo
+                ctx.lineWidth = 10; // Outline width
+                ctx.strokeStyle = "black"; // Outline color
+                ctx.strokeRect(xPos - 5, yPos - 5, logoWidth + 10, logoHeight + 10); // Outline around the logo
+
+                // Draw the branding image
+                ctx.drawImage(branding, xPos, yPos, logoWidth, logoHeight); // Positioning and resizing branding image
             }
 
             // Draw the first badge on the left
