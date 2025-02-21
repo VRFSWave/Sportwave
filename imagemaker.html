@@ -168,9 +168,12 @@
 
             const badgeWidth = 180;
             const badgeHeight = 180;
-            const badge1X = 100; // Adjusted for more space
+            const centerX = canvas.width / 2; // Calculate the center of the canvas
+            const badgeSpacing = 50; // Space between the two badges
+
+            const badge1X = centerX - badgeWidth - badgeSpacing; // Position the first badge to the left of the center
+            const badge2X = centerX + badgeSpacing; // Position the second badge to the right of the center
             const badge1Y = 100;
-            const badge2X = 470; // Adjusted for more space
             const badge2Y = 100;
 
             ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
