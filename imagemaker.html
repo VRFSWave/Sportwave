@@ -7,36 +7,60 @@
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'League Spartan', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             flex-direction: column;
-            background-color: black; /* Set webpage background to black */
+            background-color: #121212; /* Dark background */
             color: white;
             margin: 0;
             padding: 0;
         }
-        h1 {
-            color: #fff;
+
+        .container {
+            text-align: center;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
+            max-width: 600px;
         }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        p {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
         input[type="file"], textarea {
             margin: 10px 0;
-            padding: 8px;
+            padding: 10px;
             font-size: 16px;
-            width: 90%;
+            width: 100%;
             max-width: 400px;
             display: block;
+            border: 2px solid #444;
+            background: #222;
+            color: white;
+            border-radius: 5px;
         }
+
         textarea {
             height: 80px;
             resize: none;
             font-family: 'League Spartan', sans-serif;
             text-align: center;
         }
+
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
             cursor: pointer;
             background-color: #4CAF50;
@@ -44,16 +68,23 @@
             border: none;
             border-radius: 5px;
             margin: 10px 0;
+            width: 100%;
+            max-width: 400px;
+            font-weight: bold;
+            transition: 0.3s;
         }
+
         button:hover {
-            background-color: #45a049;
+            background-color: #3d8b40;
         }
+
         canvas {
-            border: 1px solid white;
+            border: 2px solid white;
             margin-top: 20px;
-        }
-        .container {
-            text-align: center;
+            background: black;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -61,12 +92,11 @@
     <div class="container">
         <h1>Football Badge Graphic Maker</h1>
         <p>Upload two football club badges and enter match details.</p>
-        <input type="file" id="badge1" accept="image/*"><br>
-        <input type="file" id="badge2" accept="image/*"><br>
-        <textarea id="customText" placeholder="Enter match details (each line will be centered)"></textarea><br>
-        <button onclick="generateGraphic()">Generate Graphic</button><br><br>
-        
-        <canvas id="canvas" width="600" height="400"></canvas><br><br>
+        <input type="file" id="badge1" accept="image/*">
+        <input type="file" id="badge2" accept="image/*">
+        <textarea id="customText" placeholder="Enter match details (each line will be centered)"></textarea>
+        <button onclick="generateGraphic()">Generate Graphic</button>
+        <canvas id="canvas" width="800" height="500"></canvas>
         <button onclick="downloadImage()">Download Graphic</button>
     </div>
 
@@ -79,11 +109,9 @@
         let background = new Image();
         background.src = 'https://i.ibb.co/MDbx54hm/image.png'; // Canvas background image
 
-        // Event listeners for the file inputs
         document.getElementById('badge1').addEventListener('change', handleFileSelect);
         document.getElementById('badge2').addEventListener('change', handleFileSelect);
 
-        // Handle file upload and read image
         function handleFileSelect(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -102,51 +130,40 @@
             reader.readAsDataURL(file);
         }
 
-        // Generate the graphic on the canvas
         function generateGraphic() {
             if (!badge1 || !badge2) {
                 alert('Please upload both badges.');
                 return;
             }
 
-            // Get multi-line text from textarea
             const customText = document.getElementById('customText').value.trim();
-            const textLines = customText.split('\n'); // Split input into lines
+            const textLines = customText.split('\n'); 
 
-            // Clear the canvas before drawing new images
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw background image
             ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-            // Define badge size (same for both)
-            const badgeWidth = 180;
-            const badgeHeight = 180;
+            const badgeWidth = 200;
+            const badgeHeight = 200;
+            const badge1X = 120;
+            const badge1Y = 120;
+            const badge2X = 480;
+            const badge2Y = 120;
 
-            // Define positions for badges (spaced further apart)
-            const badge1X = 60;  
-            const badge1Y = 100;
-            const badge2X = 360; 
-            const badge2Y = 100;
-
-            // Draw both badges with the same size
             ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
             ctx.drawImage(badge2, badge2X, badge2Y, badgeWidth, badgeHeight);
 
-            // Draw multi-line text
             ctx.font = "30px 'League Spartan', sans-serif"; 
             ctx.fillStyle = "white"; 
             ctx.textAlign = "center";
 
-            const textStartY = 320; // Start Y position for text
-            const lineHeight = 35; // Line spacing
+            const textStartY = 380;
+            const lineHeight = 35;
 
             textLines.forEach((line, index) => {
                 ctx.fillText(line, canvas.width / 2, textStartY + (index * lineHeight));
             });
         }
 
-        // Allow user to download the generated graphic
         function downloadImage() {
             const dataUrl = canvas.toDataURL();
             const link = document.createElement('a');
