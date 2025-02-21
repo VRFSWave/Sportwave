@@ -12,9 +12,7 @@
             align-items: center;
             height: 100vh;
             flex-direction: column;
-            background-image: url('https://i.ibb.co/9m1dCvVD/rm209-ning-20.jpg');
-            background-size: cover;
-            background-position: center;
+            background-color: black; /* Set webpage background to black */
             color: white;
             margin: 0;
             padding: 0;
@@ -39,9 +37,8 @@
             background-color: #45a049;
         }
         canvas {
-            border: 1px solid #000;
+            border: 1px solid white;
             margin-top: 20px;
-            background-color: rgba(255, 255, 255, 0.7);
         }
         .container {
             text-align: center;
@@ -66,9 +63,8 @@
 
         let badge1 = null;
         let badge2 = null;
-        let branding = null;
         let background = new Image();
-        background.src = 'https://i.ibb.co/9m1dCvVD/rm209-ning-20.jpg'; // Background image URL
+        background.src = 'https://i.ibb.co/MDbx54hm/image.png'; // New canvas background
 
         // Event listeners for the file inputs
         document.getElementById('badge1').addEventListener('change', handleFileSelect);
@@ -105,24 +101,6 @@
 
             // Draw background image
             ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-
-            // Draw branding image at the top, resized and with outline
-            branding = new Image();
-            branding.src = 'https://i.ibb.co/q30Vg4hV/1-1.png'; // Branding image URL
-            branding.onload = function() {
-                const logoWidth = 200; // Resize the logo to a reasonable size
-                const logoHeight = 100; // Maintain aspect ratio with a fixed height
-                const xPos = (canvas.width - logoWidth) / 2; // Center logo horizontally
-                const yPos = 20; // Position the logo at the top
-
-                // Draw a black outline around the logo
-                ctx.lineWidth = 10; // Outline width
-                ctx.strokeStyle = "black"; // Outline color
-                ctx.strokeRect(xPos - 5, yPos - 5, logoWidth + 10, logoHeight + 10); // Outline around the logo
-
-                // Draw the branding image
-                ctx.drawImage(branding, xPos, yPos, logoWidth, logoHeight); // Positioning and resizing branding image
-            }
 
             // Draw the first badge on the left
             ctx.drawImage(badge1, 50, 100, 200, 200);
