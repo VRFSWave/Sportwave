@@ -88,6 +88,15 @@
             border-radius: 8px;
         }
 
+        .slider-container {
+            margin-top: 20px;
+        }
+
+        .slider-container input {
+            width: 80%;
+            margin: 8px;
+        }
+
         @media (max-width: 768px) {
             canvas {
                 max-width: 90%;
@@ -160,6 +169,16 @@
             <option value="'Rock Salt', cursive">Rock Salt</option>
         </select>
 
+        <!-- Hue, Brightness, and Saturation Controls -->
+        <div class="slider-container">
+            <label for="hue">Hue:</label>
+            <input type="range" id="hue" min="0" max="360" value="0">
+            <label for="brightness">Brightness:</label>
+            <input type="range" id="brightness" min="0" max="200" value="100">
+            <label for="saturation">Saturation:</label>
+            <input type="range" id="saturation" min="0" max="200" value="100">
+        </div>
+
         <button onclick="generateGraphic()">Generate Graphic</button>
         <canvas id="canvas" width="600" height="400"></canvas>
         <button onclick="downloadImage()">Download Graphic</button>
@@ -177,6 +196,7 @@
         document.getElementById('badge1').addEventListener('change', handleFileSelect);
         document.getElementById('badge2').addEventListener('change', handleFileSelect);
 
+        // File select handler for badge images
         function handleFileSelect(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -195,6 +215,7 @@
             reader.readAsDataURL(file);
         }
 
+        // Function to generate graphic with adjustments
         function generateGraphic() {
             if (!badge1 || !badge2) {
                 alert('Please upload both badges.');
@@ -207,9 +228,22 @@
             const glowIntensity = document.getElementById('glowIntensity').value;
             const selectedFont = document.getElementById('fontSelect').value;
 
+            // Get background filter values
+            const hue = document.getElementById('hue').value;
+            const brightness = document.getElementById('brightness').value;
+            const saturation = document.getElementById('saturation').value;
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Apply filter to background
+            ctx.filter = `hue-rotate(${hue}deg) brightness(${brightness}%) saturate(${saturation}%)`;
+
             ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
+            // Reset the filter
+            ctx.filter = 'none';
+
+            // Drawing the badges
             const badgeWidth = 180;
             const badgeHeight = 180;
             const centerX = canvas.width / 2;
@@ -223,6 +257,7 @@
             ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
             ctx.drawImage(badge2, badge2X, badge2Y, badgeWidth, badgeHeight);
 
+            // Drawing the text
             ctx.font = `30px ${selectedFont}`;
             ctx.fillStyle = textColor;
             ctx.textAlign = "center";
@@ -239,6 +274,7 @@
             ctx.shadowBlur = 0; 
         }
 
+        // Function to download the generated graphic
         function downloadImage() {
             const dataUrl = canvas.toDataURL();
             const link = document.createElement('a');
