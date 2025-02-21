@@ -223,14 +223,14 @@
             ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
             ctx.drawImage(badge2, badge2X, badge2Y, badgeWidth, badgeHeight);
 
-            ctx.font = `16px ${selectedFont}`;
+            ctx.font = `30px ${selectedFont}`;
             ctx.fillStyle = textColor;
             ctx.textAlign = "center";
             ctx.shadowColor = textColor;
             ctx.shadowBlur = glowIntensity;
 
-            const textStartY = 30;
-            const lineHeight = 8;
+            const textStartY = badge1Y + badgeHeight + 30; 
+            const lineHeight = 35;
 
             textLines.forEach((line, index) => {
                 ctx.fillText(line, canvas.width / 2, textStartY + (index * lineHeight));
