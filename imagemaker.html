@@ -12,10 +12,15 @@
             align-items: center;
             height: 100vh;
             flex-direction: column;
-            background-color: #f4f4f4;
+            background-image: url('https://i.ibb.co/9m1dCvVD/rm209-ning-20.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            margin: 0;
+            padding: 0;
         }
         h1 {
-            color: #333;
+            color: #fff;
         }
         input[type="file"] {
             margin: 10px 0;
@@ -36,10 +41,14 @@
         canvas {
             border: 1px solid #000;
             margin-top: 20px;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.7);
         }
         .container {
             text-align: center;
+            background-image: url('https://i.ibb.co/q30Vg4hV/1-1.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            padding-top: 120px;
         }
     </style>
 </head>
@@ -61,6 +70,9 @@
 
         let badge1 = null;
         let badge2 = null;
+        let branding = null;
+        let background = new Image();
+        background.src = 'https://i.ibb.co/9m1dCvVD/rm209-ning-20.jpg'; // Background image URL
 
         // Event listeners for the file inputs
         document.getElementById('badge1').addEventListener('change', handleFileSelect);
@@ -94,6 +106,16 @@
 
             // Clear the canvas before drawing new images
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw background image
+            ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+            // Draw branding image at the top
+            branding = new Image();
+            branding.src = 'https://i.ibb.co/q30Vg4hV/1-1.png'; // Branding image URL
+            branding.onload = function() {
+                ctx.drawImage(branding, (canvas.width - branding.width) / 2, 20); // Positioning branding image at the top
+            }
 
             // Draw the first badge on the left
             ctx.drawImage(badge1, 50, 100, 200, 200);
