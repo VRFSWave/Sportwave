@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Videos - ESPN Style</title>
+    <title>My YouTube Videos - ESPN Style</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -69,7 +69,6 @@
             display: flex;
             justify-content: center;
             gap: 10px;
-            flex-wrap: wrap;
         }
         .filter-btn {
             padding: 8px 15px;
@@ -93,8 +92,6 @@
             gap: 20px;
             padding: 40px 20px;
         }
-        
-        /* YouTube & Twitch (Standard Size) */
         .video {
             width: 320px;
             background: #252525;
@@ -106,19 +103,12 @@
         .video:hover {
             transform: scale(1.05);
         }
-        
-        /* TikTok (Larger Container) */
-        .video.tiktok {
-            width: 360px;
-        }
-
         .video-title {
             margin-top: 10px;
             font-size: 16px;
             font-weight: bold;
         }
-
-        iframe, blockquote {
+        iframe {
             width: 100%;
             border-radius: 8px;
         }
@@ -147,31 +137,28 @@
     </div>
 
     <div class="gallery" id="videoGallery">
-        <!-- YouTube Video -->
-        <div class="video" data-category="sportwave" data-title="Ajax VS Arsenal | Full Match">
-            <iframe width="320" height="180" src="https://www.youtube.com/embed/lQlNqUKezTo" frameborder="0" allowfullscreen></iframe>
-            <p class="video-title">Ajax VS Arsenal | Full Match</p>
-        </div>
-
-    <div class="gallery" id="videoGallery">
-        <!-- YouTube Video -->
-        <div class="video" data-category="sportwave" data-title="Ajax VS Arsenal | Full Match">
-            <iframe width="320" height="180" src="https://www.youtube.com/embed/lQlNqUKezTo" frameborder="0" allowfullscreen></iframe>
+        <!-- Videos categorized for filtering -->
+        <div class="video" data-category="sportwave" data-title="Sportwave Highlight 1">
+            <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID_1" frameborder="0" allowfullscreen></iframe>
             <p class="video-title">PLACEHOLDER</p>
         </div>
-
-
-            <div class="gallery" id="videoGallery">
-        <!-- YouTube Video -->
-        <div class="video" data-category="sportwave" data-title="Ajax VS Arsenal | Full Match">
-            <iframe width="320" height="180" src="https://www.youtube.com/embed/lQlNqUKezTo" frameborder="0" allowfullscreen></iframe>
+        <div class="video" data-category="match" data-title="Match Replay 1">
+            <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID_2" frameborder="0" allowfullscreen></iframe>
             <p class="video-title">PLACEHOLDER</p>
         </div>
+        <div class="video" data-category="partner" data-title="Partner Game 1">
+            <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID_3" frameborder="0" allowfullscreen></iframe>
+            <p class="video-title">PLACEHOLDER</p>
+        </div>
+        <div class="video" data-category="creator" data-title="Content Creator Special">
+            <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID_4" frameborder="0" allowfullscreen></iframe>
+            <p class="video-title">PLACEHOLDER</p>
+        </div>
+    </div>
 
-                
     <script>
         const showHeroVideo = true; 
-        const heroVideoId = "lkuO_hhKtfI?si=TgEbCF5Xhcw2REBB"; 
+        const heroVideoId = "lQlNqUKezTo"; 
 
         if (showHeroVideo) {
             document.getElementById("hero-video-container").innerHTML = `
