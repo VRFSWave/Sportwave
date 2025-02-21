@@ -11,74 +11,63 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             flex-direction: column;
             background: #0d0d0d;
             color: white;
             margin: 0;
-            padding: 0;
+            padding: 20px;
         }
 
         .container {
             text-align: center;
             background: linear-gradient(145deg, #1a1a1a, #222);
-            padding: 25px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0px 4px 20px rgba(255, 255, 255, 0.08);
-            max-width: 650px;
+            max-width: 90%;
             border: 2px solid #333;
         }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 26px;
+            font-size: 24px;
             color: #ffcc00;
             text-shadow: 0px 0px 10px rgba(255, 204, 0, 0.6);
         }
 
-        p {
-            font-size: 14px;
-            color: #bbb;
-        }
-
-        input, select {
-            margin: 10px;
+        input, select, textarea {
+            margin: 8px;
             padding: 10px;
-            font-size: 16px;
+            font-size: 14px;
             width: 90%;
-            max-width: 420px;
+            max-width: 400px;
             display: block;
             border: 2px solid #555;
             background: #181818;
             color: white;
-            border-radius: 8px;
+            border-radius: 6px;
             outline: none;
             transition: 0.3s;
         }
 
         textarea {
-            height: 90px;
+            height: 70px;
             resize: none;
-            font-family: 'League Spartan', sans-serif;
             text-align: center;
         }
 
-        input:hover, select:hover, textarea:focus {
-            border-color: #ffcc00;
-            box-shadow: 0px 0px 10px rgba(255, 204, 0, 0.5);
-        }
-
         button {
-            padding: 14px 24px;
-            font-size: 16px;
+            padding: 12px;
+            font-size: 14px;
             cursor: pointer;
             background: linear-gradient(145deg, #ffcc00, #ffaa00);
             color: black;
             border: none;
-            border-radius: 8px;
-            margin: 12px 0;
+            border-radius: 6px;
+            margin: 10px 0;
             width: 90%;
-            max-width: 420px;
+            max-width: 400px;
             font-weight: bold;
             text-transform: uppercase;
             transition: 0.3s;
@@ -86,23 +75,29 @@
 
         button:hover {
             background: linear-gradient(145deg, #ffaa00, #ff9900);
-            box-shadow: 0px 0px 12px rgba(255, 165, 0, 0.7);
+            box-shadow: 0px 0px 10px rgba(255, 165, 0, 0.7);
         }
 
         canvas {
             border: 2px solid #ffcc00;
-            margin-top: 20px;
+            margin-top: 15px;
             background: black;
             width: 100%;
             max-width: 700px;
+            height: auto;
             border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            canvas {
+                max-width: 90%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>⚽ Football Badge Graphic Maker ⚽</h1>
-        <p>Upload two football club badges and enter match details.</p>
         <input type="file" id="badge1" accept="image/*">
         <input type="file" id="badge2" accept="image/*">
         <textarea id="customText" placeholder="Enter match details (each line will be centered)"></textarea>
@@ -122,7 +117,7 @@
         </select>
 
         <button onclick="generateGraphic()">Generate Graphic</button>
-        <canvas id="canvas" width="900" height="500"></canvas>
+        <canvas id="canvas" width="700" height="400"></canvas>
         <button onclick="downloadImage()">Download Graphic</button>
     </div>
 
@@ -133,7 +128,7 @@
         let badge1 = null;
         let badge2 = null;
         let background = new Image();
-        background.src = 'https://i.ibb.co/MDbx54hm/image.png'; // Canvas background
+        background.src = 'https://i.ibb.co/MDbx54hm/image.png';
 
         document.getElementById('badge1').addEventListener('change', handleFileSelect);
         document.getElementById('badge2').addEventListener('change', handleFileSelect);
@@ -171,24 +166,24 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-            const badgeWidth = 220;
-            const badgeHeight = 220;
-            const badge1X = 150;
-            const badge1Y = 120;
-            const badge2X = 530;
-            const badge2Y = 120;
+            const badgeWidth = 180;
+            const badgeHeight = 180;
+            const badge1X = 130;
+            const badge1Y = 100;
+            const badge2X = 390;
+            const badge2Y = 100;
 
             ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
             ctx.drawImage(badge2, badge2X, badge2Y, badgeWidth, badgeHeight);
 
-            ctx.font = `32px ${selectedFont}`; 
+            ctx.font = `28px ${selectedFont}`; 
             ctx.fillStyle = textColor;
             ctx.textAlign = "center";
             ctx.shadowColor = textColor;
             ctx.shadowBlur = glowIntensity;
 
-            const textStartY = 400;
-            const lineHeight = 38;
+            const textStartY = 320;
+            const lineHeight = 32;
 
             textLines.forEach((line, index) => {
                 ctx.fillText(line, canvas.width / 2, textStartY + (index * lineHeight));
