@@ -36,12 +36,34 @@
             text-shadow: 0px 0px 10px rgba(255, 204, 0, 0.6);
         }
 
-        input, select, textarea {
-            margin: 8px;
-            padding: 10px;
-            font-size: 14px;
+        .section {
+            background-color: #2c2c2c;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+
+        .section h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+
+        .section label {
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .section input, .section select {
+            margin-top: 5px;
             width: 90%;
             max-width: 400px;
+            padding: 10px;
+            font-size: 14px;
             display: block;
             border: 2px solid #555;
             background: #181818;
@@ -51,10 +73,9 @@
             transition: 0.3s;
         }
 
-        textarea {
-            height: 70px;
-            resize: none;
-            text-align: center;
+        .section input[type="color"] {
+            padding: 0;
+            width: 80px;
         }
 
         button {
@@ -92,21 +113,6 @@
             canvas {
                 max-width: 90%;
             }
-        }
-
-        .section {
-            margin-bottom: 20px;
-        }
-
-        .section label {
-            font-size: 16px;
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-
-        .section input, .section select {
-            margin-top: 5px;
         }
 
     </style>
