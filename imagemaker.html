@@ -114,12 +114,24 @@
                 max-width: 90%;
             }
         }
-
     </style>
 </head>
 <body>
     <div class="container">
         <h1>⚽ Football Badge Graphic Maker ⚽</h1>
+
+        <!-- Background Section -->
+        <div class="section">
+            <h3>Background</h3>
+            <label for="backgroundSelect">Choose Background:</label>
+            <select id="backgroundSelect">
+                <option value="https://i.ibb.co/MDbx54hm/image.png">Standard</option>
+                <option value="https://i.ibb.co/1GXsP8NT/image.png">Champions League</option>
+                <option value="https://i.ibb.co/bgxnc11X/image.png">Spanish RED</option>
+                <option value="https://i.ibb.co/bgRhxY8k/image.png">Europa League</option>
+                <option value="https://i.ibb.co/v40fk3jz/image.png">Black with Gradient</option>
+            </select>
+        </div>
 
         <!-- Badges Section -->
         <div class="section">
@@ -148,13 +160,12 @@
                 <option value="'Impact', sans-serif">Impact</option>
                 <option value="'Tahoma', sans-serif">Tahoma</option>
                 <option value="'Verdana', sans-serif">Verdana</option>
-                <!-- Add more font options here as needed -->
             </select>
         </div>
 
-        <!-- Background Section -->
+        <!-- Hue/Saturation/Brightness Section -->
         <div class="section">
-            <h3>Background</h3>
+            <h3>Background Adjustments</h3>
             <label for="hue">Hue:</label>
             <input type="range" id="hue" min="0" max="360" value="0" />
             <label for="brightness">Brightness:</label>
@@ -175,7 +186,13 @@
         let badge1 = null;
         let badge2 = null;
         let background = new Image();
-        background.src = 'https://i.ibb.co/MDbx54hm/image.png';
+        background.src = 'https://i.ibb.co/MDbx54hm/image.png'; // Default background
+
+        // Handle background selection change
+        document.getElementById('backgroundSelect').addEventListener('change', function() {
+            const selectedBackground = this.value;
+            background.src = selectedBackground;
+        });
 
         document.getElementById('badge1').addEventListener('change', handleFileSelect);
         document.getElementById('badge2').addEventListener('change', handleFileSelect);
@@ -223,9 +240,9 @@
 
             const badgeWidth = 180;
             const badgeHeight = 180;
-            const badge1X = 70; // Adjusted position to add more space
+            const badge1X = 70;
             const badge1Y = 100;
-            const badge2X = 350; // Adjusted position to add more space
+            const badge2X = 350;
             const badge2Y = 100;
 
             ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
@@ -236,10 +253,9 @@
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
-            // Place the text under the badges
-            let yOffset = badge1Y + badgeHeight + 20;  // Start text under the badges
+            let yOffset = badge1Y + badgeHeight + 20;
             textLines.forEach((line, index) => {
-                ctx.fillText(line, canvas.width / 2, yOffset + (index * 40)); // Add spacing between lines
+                ctx.fillText(line, canvas.width / 2, yOffset + (index * 40));
             });
         }
 
