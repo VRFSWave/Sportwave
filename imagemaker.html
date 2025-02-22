@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Football Badge Graphic Maker</title>
-    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Orbitron:wght@500&family=Roboto:wght@700&family=Oswald:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Orbitron:wght@500&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'League Spartan', sans-serif;
@@ -112,6 +112,19 @@
             </select>
         </div>
 
+        <!-- Background Color Adjustment -->
+        <div class="section">
+            <h3>Background Color Adjustments</h3>
+            <label for="bgColor">Background Color:</label>
+            <input type="color" id="bgColor" value="#000000">
+            <label for="hue">Hue:</label>
+            <input type="range" id="hue" min="0" max="360" value="0">
+            <label for="brightness">Brightness:</label>
+            <input type="range" id="brightness" min="50" max="150" value="100">
+            <label for="saturation">Saturation:</label>
+            <input type="range" id="saturation" min="50" max="150" value="100">
+        </div>
+
         <!-- Badge Upload Section -->
         <div class="section">
             <h3>Badges</h3>
@@ -145,25 +158,16 @@
             background.src = this.value;
         });
 
-        document.getElementById('badge1').addEventListener('change', handleFileSelect);
-        document.getElementById('badge2').addEventListener('change', handleFileSelect);
+        function applyBackgroundColor() {
+            const bgColor = document.getElementById('bgColor').value;
+            const hue = document.getElementById('hue').value;
+            const brightness = document.getElementById('brightness').value;
+            const saturation = document.getElementById('saturation').value;
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = function() {
-                    if (event.target.id === 'badge1') {
-                        badge1 = img;
-                    } else if (event.target.id === 'badge2') {
-                        badge2 = img;
-                    }
-                };
-            };
-            reader.readAsDataURL(file);
+            ctx.filter = `hue-rotate(${hue}deg) brightness(${brightness}%) saturate(${saturation}%)`;
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.filter = "none";
         }
 
         function generateGraphic() {
@@ -172,28 +176,26 @@
                 return;
             }
 
+            applyBackgroundColor();
+
             const customText = document.getElementById('customText').value.trim();
             const textColor = document.getElementById('textColor').value;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
             const badgeWidth = 180;
             const badgeHeight = 180;
             const spacing = 80;
 
             const badge1X = (canvas.width / 2) - badgeWidth - (spacing / 2);
-            const badge1Y = 100;
             const badge2X = (canvas.width / 2) + (spacing / 2);
-            const badge2Y = 100;
+            const badgeY = 100;
 
-            ctx.drawImage(badge1, badge1X, badge1Y, badgeWidth, badgeHeight);
-            ctx.drawImage(badge2, badge2X, badge2Y, badgeWidth, badgeHeight);
+            ctx.drawImage(badge1, badge1X, badgeY, badgeWidth, badgeHeight);
+            ctx.drawImage(badge2, badge2X, badgeY, badgeWidth, badgeHeight);
 
             ctx.font = `30px 'League Spartan', sans-serif`; 
             ctx.fillStyle = textColor;
             ctx.textAlign = "center";
-            ctx.fillText(customText, canvas.width / 2, badge1Y + badgeHeight + 40);
+            ctx.fillText(customText, canvas.width / 2, badgeY + badgeHeight + 40);
         }
 
         function downloadImage() {
