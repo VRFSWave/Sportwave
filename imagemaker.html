@@ -60,8 +60,8 @@
             border: 2px solid #ffcc00;
             margin-top: 15px;
             background: black;
-            width: 400px;
-            height: 600px;
+            width: 600px;
+            height: 400px;
             border-radius: 8px;
         }
     </style>
@@ -81,6 +81,8 @@
             <textarea id="customText" placeholder="Enter match details"></textarea>
             <label>Text Color:</label>
             <input type="color" id="textColor" value="#ffcc00">
+            <label>Choose Font:</label>
+            <select id="fontSelect"></select>
         </div>
         
         <div class="category">
@@ -98,7 +100,7 @@
         </div>
 
         <button onclick="generateGraphic()">Generate Graphic</button>
-        <canvas id="canvas" width="400" height="600"></canvas>
+        <canvas id="canvas" width="600" height="400"></canvas>
         <button onclick="downloadImage()">Download</button>
     </div>
 
@@ -148,7 +150,7 @@
             ctx.drawImage(badge2, badge2X, badgeY, badgeWidth, badgeHeight);
             
             ctx.fillStyle = document.getElementById('textColor').value;
-            ctx.font = '30px League Spartan';
+            ctx.font = '30px ' + document.getElementById('fontSelect').value;
             ctx.textAlign = "center";
             ctx.fillText(document.getElementById('customText').value, canvas.width / 2, 280);
         }
