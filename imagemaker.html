@@ -18,7 +18,6 @@
             margin: 0;
             padding: 20px;
         }
-
         .container {
             text-align: center;
             background: linear-gradient(145deg, #1a1a1a, #222);
@@ -28,69 +27,41 @@
             max-width: 90%;
             border: 2px solid #333;
         }
-
-        .section {
+        .category {
             background: #181818;
             padding: 15px;
             margin: 10px 0;
             border-radius: 8px;
             border: 2px solid #333;
         }
-
         h2 {
-            font-size: 18px;
-            margin-bottom: 10px;
             color: #ffcc00;
         }
-
-        input, select, textarea {
+        button, select, input {
             margin: 8px;
             padding: 10px;
             font-size: 14px;
-            width: 90%;
-            max-width: 400px;
-            display: block;
             border: 2px solid #555;
-            background: #181818;
+            background: #222;
             color: white;
             border-radius: 6px;
             outline: none;
             transition: 0.3s;
         }
-
-        textarea {
-            height: 70px;
-            resize: none;
-            text-align: center;
-        }
-
         button {
-            padding: 12px;
-            font-size: 14px;
-            cursor: pointer;
             background: linear-gradient(145deg, #ffcc00, #ffaa00);
-            color: black;
-            border: none;
-            border-radius: 6px;
-            margin: 10px 0;
-            width: 90%;
-            max-width: 400px;
+            cursor: pointer;
             font-weight: bold;
-            text-transform: uppercase;
-            transition: 0.3s;
         }
-
         button:hover {
             background: linear-gradient(145deg, #ffaa00, #ff9900);
-            box-shadow: 0px 0px 10px rgba(255, 165, 0, 0.7);
         }
-
         canvas {
             border: 2px solid #ffcc00;
             margin-top: 15px;
             background: black;
-            width: 600px;
-            height: 400px;
+            width: 400px;
+            height: 600px;
             border-radius: 8px;
         }
     </style>
@@ -98,119 +69,94 @@
 <body>
     <div class="container">
         <h1>⚽ Football Badge Graphic Maker ⚽</h1>
-
-        <div class="section">
-            <h2>🏆 Badges</h2>
+        
+        <div class="category">
+            <h2>Badges</h2>
             <input type="file" id="badge1" accept="image/*">
             <input type="file" id="badge2" accept="image/*">
         </div>
 
-        <div class="section">
-            <h2>📝 Text</h2>
-            <textarea id="customText" placeholder="Enter match details (each line will be centered)"></textarea>
-            <label for="textColor">Text Color:</label>
+        <div class="category">
+            <h2>Text</h2>
+            <textarea id="customText" placeholder="Enter match details"></textarea>
+            <label>Text Color:</label>
             <input type="color" id="textColor" value="#ffcc00">
         </div>
-
-        <div class="section">
-            <h2>🎨 Background</h2>
-            <label for="backgroundSelect">Choose Background:</label>
+        
+        <div class="category">
+            <h2>Background</h2>
+            <label>Select Background:</label>
             <select id="backgroundSelect">
                 <option value="https://i.ibb.co/MDbx54hm/image.png">Standard</option>
                 <option value="https://i.ibb.co/1GXsP8NT/image.png">Champions League</option>
                 <option value="https://i.ibb.co/bgxnc11X/image.png">Spanish RED</option>
                 <option value="https://i.ibb.co/bgRhxY8k/image.png">Europa League</option>
-                <option value="https://i.ibb.co/v40fk3jz/image.png">Black with Gradient</option>
+                <option value="https://i.ibb.co/v40fk3jz/image.png">Black Gradient</option>
             </select>
-            
-            <label for="bgColor">Custom Background Color:</label>
+            <label>Background Color:</label>
             <input type="color" id="bgColor" value="#000000">
-
-            <label for="hue">Hue:</label>
-            <input type="range" id="hue" min="0" max="360" value="0">
-            <label for="brightness">Brightness:</label>
-            <input type="range" id="brightness" min="50" max="150" value="100">
-            <label for="saturation">Saturation:</label>
-            <input type="range" id="saturation" min="50" max="150" value="100">
         </div>
 
         <button onclick="generateGraphic()">Generate Graphic</button>
-        <canvas id="canvas"></canvas>
-        <button onclick="downloadImage()">Download Graphic</button>
+        <canvas id="canvas" width="400" height="600"></canvas>
+        <button onclick="downloadImage()">Download</button>
     </div>
 
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-
-        let badge1 = new Image();
-        let badge2 = new Image();
+        let badge1 = null, badge2 = null;
         let background = new Image();
-
         background.src = document.getElementById('backgroundSelect').value;
 
+        document.getElementById('badge1').addEventListener('change', handleFileSelect);
+        document.getElementById('badge2').addEventListener('change', handleFileSelect);
         document.getElementById('backgroundSelect').addEventListener('change', function() {
             background.src = this.value;
-            generateGraphic();
         });
 
-        function loadBadge(event, badgeImage) {
+        function handleFileSelect(event) {
             const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    badgeImage.src = e.target.result;
-                    generateGraphic();
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    if (event.target.id === 'badge1') badge1 = img;
+                    else if (event.target.id === 'badge2') badge2 = img;
                 };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        document.getElementById('badge1').addEventListener('change', (event) => loadBadge(event, badge1));
-        document.getElementById('badge2').addEventListener('change', (event) => loadBadge(event, badge2));
-
-        function applyBackgroundColor() {
-            const bgColor = document.getElementById('bgColor').value;
-            const hue = document.getElementById('hue').value;
-            const brightness = document.getElementById('brightness').value;
-            const saturation = document.getElementById('saturation').value;
-
-            ctx.filter = `hue-rotate(${hue}deg) brightness(${brightness}%) saturate(${saturation}%)`;
-            ctx.fillStyle = bgColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.filter = "none";
+            };
+            reader.readAsDataURL(file);
         }
 
         function generateGraphic() {
+            if (!badge1 || !badge2) {
+                alert('Please upload both badges.');
+                return;
+            }
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            applyBackgroundColor();
+            ctx.fillStyle = document.getElementById('bgColor').value;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-
-            const badgeWidth = 180;
-            const badgeHeight = 180;
-            const spacing = 80;
-
-            const badge1X = (canvas.width / 2) - badgeWidth - (spacing / 2);
-            const badge2X = (canvas.width / 2) + (spacing / 2);
+            
+            const badgeWidth = 120, badgeHeight = 120;
+            const badge1X = (canvas.width / 2) - 140;
+            const badge2X = (canvas.width / 2) + 20;
             const badgeY = 100;
-
-            if (badge1.src) ctx.drawImage(badge1, badge1X, badgeY, badgeWidth, badgeHeight);
-            if (badge2.src) ctx.drawImage(badge2, badge2X, badgeY, badgeWidth, badgeHeight);
-
-            const customText = document.getElementById('customText').value.trim();
-            const textColor = document.getElementById('textColor').value;
-
-            ctx.font = `30px 'League Spartan', sans-serif`; 
-            ctx.fillStyle = textColor;
+            ctx.drawImage(badge1, badge1X, badgeY, badgeWidth, badgeHeight);
+            ctx.drawImage(badge2, badge2X, badgeY, badgeWidth, badgeHeight);
+            
+            ctx.fillStyle = document.getElementById('textColor').value;
+            ctx.font = '30px League Spartan';
             ctx.textAlign = "center";
-            ctx.fillText(customText, canvas.width / 2, badgeY + badgeHeight + 40);
+            ctx.fillText(document.getElementById('customText').value, canvas.width / 2, 280);
         }
 
         function downloadImage() {
             const link = document.createElement('a');
+            link.href = canvas.toDataURL();
             link.download = 'football_badge_graphic.png';
-            link.href = canvas.toDataURL('image/png');
             link.click();
         }
     </script>
