@@ -136,8 +136,13 @@
         <!-- Badges Section -->
         <div class="section">
             <h3>Badges</h3>
-            <input type="file" id="badge1" accept="image/*" />
-            <input type="file" id="badge2" accept="image/*" />
+            <label for="badge1File">Upload Badge 1 (or use URL):</label>
+            <input type="file" id="badge1File" accept="image/*" />
+            <input type="text" id="badge1Url" placeholder="Enter Badge 1 URL" />
+            
+            <label for="badge2File">Upload Badge 2 (or use URL):</label>
+            <input type="file" id="badge2File" accept="image/*" />
+            <input type="text" id="badge2Url" placeholder="Enter Badge 2 URL" />
         </div>
 
         <!-- Text Section -->
@@ -150,7 +155,7 @@
             <input type="range" id="glowIntensity" min="0" max="20" value="8" />
             <label for="fontSelect">Choose Font:</label>
             <select id="fontSelect">
-                <option value="'League Spartan', sans-serif">Sportwave Sans</option>
+                <option value="'League Spartan', sans-serif">League Spartan</option>
                 <option value="'Orbitron', sans-serif">Orbitron</option>
                 <option value="'Roboto', sans-serif">Roboto</option>
                 <option value="'Oswald', sans-serif">Oswald</option>
@@ -194,8 +199,19 @@
             background.src = selectedBackground;
         });
 
-        document.getElementById('badge1').addEventListener('change', handleFileSelect);
-        document.getElementById('badge2').addEventListener('change', handleFileSelect);
+        // Handle badge file input changes
+        document.getElementById('badge1File').addEventListener('change', handleFileSelect);
+        document.getElementById('badge2File').addEventListener('change', handleFileSelect);
+
+        // Handle badge URL input changes
+        document.getElementById('badge1Url').addEventListener('input', function() {
+            badge1 = new Image();
+            badge1.src = this.value;
+        });
+        document.getElementById('badge2Url').addEventListener('input', function() {
+            badge2 = new Image();
+            badge2.src = this.value;
+        });
 
         function handleFileSelect(event) {
             const file = event.target.files[0];
@@ -205,9 +221,9 @@
                 const img = new Image();
                 img.src = e.target.result;
                 img.onload = function() {
-                    if (event.target.id === 'badge1') {
+                    if (event.target.id === 'badge1File') {
                         badge1 = img;
-                    } else if (event.target.id === 'badge2') {
+                    } else if (event.target.id === 'badge2File') {
                         badge2 = img;
                     }
                 };
