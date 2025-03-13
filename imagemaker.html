@@ -37,7 +37,7 @@
         h2 {
             color: #ffcc00;
         }
-        button, select, input {
+        button, select, input, textarea {
             margin: 8px;
             padding: 10px;
             font-size: 14px;
@@ -72,17 +72,23 @@
 
         <div class="category">
             <h2>Badges</h2>
+            <label>Badge 1:</label>
             <input type="file" id="badge1" accept="image/*">
+            <input type="text" id="badge1Url" placeholder="Or enter image URL">
+            <label>Badge 2:</label>
             <input type="file" id="badge2" accept="image/*">
+            <input type="text" id="badge2Url" placeholder="Or enter image URL">
         </div>
 
         <div class="category">
             <h2>Text</h2>
-            <textarea id="customText" placeholder="Enter match details"></textarea>
+            <textarea id="customText" placeholder="Enter match details (one line per row)"></textarea>
             <label>Text Color:</label>
             <input type="color" id="textColor" value="#ffcc00">
             <label>Choose Font:</label>
             <select id="fontSelect"></select>
+            <label>Font Size:</label>
+            <input type="number" id="fontSize" value="30" min="10" max="100">
         </div>
 
         <div class="category">
@@ -94,6 +100,7 @@
                 <option value="https://i.ibb.co/bgxnc11X/image.png">Spanish RED</option>
                 <option value="https://i.ibb.co/bgRhxY8k/image.png">Europa League</option>
                 <option value="https://i.ibb.co/v40fk3jz/image.png">Black Gradient</option>
+                <option value="https://i.ibb.co/gM9619hv/Copa-Del-Rey.png">Copa Del Rey</option>
             </select>
             <label>Background Color:</label>
             <input type="color" id="bgColor" value="#000000">
@@ -117,6 +124,15 @@
             background.src = this.value;
         });
 
+        const fontSelect = document.getElementById('fontSelect');
+        const fonts = ['League Spartan', 'Orbitron', 'Roboto', 'Oswald'];
+        fonts.forEach(font => {
+            const option = document.createElement('option');
+            option.value = font;
+            option.textContent = font;
+            fontSelect.appendChild(option);
+        });
+
         function handleFileSelect(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -132,34 +148,21 @@
         }
 
         function generateGraphic() {
-            if (!badge1 || !badge2) {
-                alert('Please upload both badges.');
-                return;
-            }
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = document.getElementById('bgColor').value;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
             const badgeWidth = 160, badgeHeight = 160;
-            const badge1X = canvas.width / 2 + 70; // Badge 1 aligned to the right
-            const badge2X = canvas.width / 2 - badgeWidth - 70; // Badge 2 aligned to the left
-            const badgeY = 100;
-            ctx.drawImage(badge1, badge1X, badgeY, badgeWidth, badgeHeight);
-            ctx.drawImage(badge2, badge2X, badgeY, badgeWidth, badgeHeight);
+            ctx.drawImage(badge1, 40, 100, badgeWidth, badgeHeight);
+            ctx.drawImage(badge2, canvas.width - 200, 100, badgeWidth, badgeHeight);
 
+            const text = document.getElementById('customText').value.split('\n');
             ctx.fillStyle = document.getElementById('textColor').value;
-            ctx.font = '30px ' + document.getElementById('fontSelect').value;
-            ctx.textAlign = "center";
-            ctx.fillText(document.getElementById('customText').value, canvas.width / 2, 280);
-        }
-
-        function downloadImage() {
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL();
-            link.download = 'football_badge_graphic.png';
-            link.click();
+            ctx.font = `${document.getElementById('fontSize').value}px ${fontSelect.value}`;
+            text.forEach((line, index) => {
+                ctx.fillText(line, canvas.width / 2 - ctx.measureText(line).width / 2, 300 + index * 40);
+            });
         }
     </script>
 </body>
