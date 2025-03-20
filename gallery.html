@@ -100,17 +100,24 @@
     <script>
         const rssFeedUrl = 'https://sportwaveannouncements.blogspot.com/feeds/posts/default';
 
+        // Fetch RSS and prevent caching issues
         async function fetchRSS() {
             try {
-                const noCacheUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssFeedUrl)}&nocache=${new Date().getTime()}`;
+                // Force fresh data using a unique timestamp to bypass cache
+                const noCacheUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssFeedUrl)}&nocache=${Date.now()}`;
                 const response = await fetch(noCacheUrl, { cache: 'no-store' });
                 const data = await response.json();
-                displayNews(data.items);
+
+                // Ensure only valid posts (filter deleted/empty ones)
+                const validPosts = data.items.filter(item => item.link && item.title);
+
+                displayNews(validPosts);
             } catch (error) {
                 console.error('Error fetching RSS feed:', error);
             }
         }
 
+        // Extract images and ensure only large images are used
         function extractImagesFromDescription(description) {
             const imageUrls = [];
             const imgTags = description.match(/<img[^>]+src="([^"]+)"[^>]*>/g) || [];
@@ -119,7 +126,7 @@
                 const urlMatch = imgTag.match(/src="([^"]+)"/);
                 if (urlMatch) {
                     let imageUrl = urlMatch[1];
-                    // Ensure only high-quality images (replace size with /s1920/)
+                    // Force high-resolution images by adjusting size to /s1920/
                     imageUrl = imageUrl.replace(/\/s\d+\//, '/s1920/');
                     imageUrls.push(imageUrl);
                 }
@@ -128,6 +135,7 @@
             return imageUrls;
         }
 
+        // Create carousel with images for each post
         function createImageCarousel(images, postIndex) {
             if (images.length === 0) return ''; // No images, no carousel
 
@@ -140,6 +148,7 @@
             `;
         }
 
+        // Display news items dynamically
         function displayNews(items) {
             const container = document.getElementById('news-container');
             container.innerHTML = '';
@@ -159,6 +168,7 @@
             });
         }
 
+        // Carousel Navigation: Go to the previous image
         function prevSlide(postIndex) {
             const images = document.querySelectorAll(`#carousel-${postIndex} img`);
             let activeIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
@@ -168,6 +178,7 @@
             images[activeIndex].classList.add('active');
         }
 
+        // Carousel Navigation: Go to the next image
         function nextSlide(postIndex) {
             const images = document.querySelectorAll(`#carousel-${postIndex} img`);
             let activeIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
@@ -177,7 +188,10 @@
             images[activeIndex].classList.add('active');
         }
 
-        setInterval(fetchRSS, 30000); // Refresh every 30 seconds
+        // Auto-update every 30 seconds to fetch fresh content
+        setInterval(fetchRSS, 30000);
+
+        // Initial load
         fetchRSS();
     </script>
 
