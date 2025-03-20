@@ -5,6 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sportwave News</title>
+    
+    <!-- Prevent Caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Disable local storage, cookies, and cache in modern browsers -->
+    <script>
+        // Disable localStorage and sessionStorage
+        Object.defineProperty(window, 'localStorage', { value: null });
+        Object.defineProperty(window, 'sessionStorage', { value: null });
+
+        // Clear cache and prevent service workers from caching
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+
+        // Clear cookies
+        document.cookie.split(";").forEach((c) => {
+            document.cookie = c
+                .replace(/^ +/, "")
+                .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
+        });
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -106,7 +135,16 @@
 
         async function fetchRSS() {
             try {
-                const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssFeedUrl)}`);
+                // Ensure the request is fresh by appending a cache-busting query
+                const noCacheUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssFeedUrl)}&nocache=${new Date().getTime()}`;
+                const response = await fetch(noCacheUrl, {
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
                 const data = await response.json();
                 displayNews(data.items);
             } catch (error) {
@@ -122,8 +160,6 @@
                 const urlMatch = imgTag.match(/src="([^"]+)"/);
                 if (urlMatch) {
                     let imageUrl = urlMatch[1];
-
-                    // Replace small images with large images
                     imageUrl = imageUrl.replace(/\/s\d+\//, '/s1920/');
                     imageUrls.push(imageUrl);
                 }
@@ -135,14 +171,13 @@
         function createImageCarousel(images) {
             if (images.length <= 1) return '';
 
-            let carouselHTML = `
+            return `
                 <div class="carousel">
                     ${images.map((img, index) => `<img src="${img}" class="${index === 0 ? 'active' : ''}" alt="news image">`).join('')}
                     <button class="carousel-btn prev" onclick="prevSlide(this)">❮</button>
                     <button class="carousel-btn next" onclick="nextSlide(this)">❯</button>
                 </div>
             `;
-            return carouselHTML;
         }
 
         function displayNews(items) {
@@ -152,7 +187,7 @@
             items.forEach(item => {
                 const newsItem = document.createElement('div');
                 newsItem.className = 'news-item';
-                
+
                 const images = extractImagesFromDescription(item.description);
                 const carousel = createImageCarousel(images);
 
@@ -186,7 +221,7 @@
             images[activeIndex].classList.add('active');
         }
 
-        // Refresh every 30 seconds
+        // Refresh every 30 seconds without cache
         setInterval(fetchRSS, 30000);
 
         fetchRSS();
