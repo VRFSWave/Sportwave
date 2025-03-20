@@ -88,36 +88,6 @@
         .next {
             right: 10px;
         }
-
-        .carousel-indicators {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 5px;
-            z-index: 10;
-        }
-
-        .carousel-indicators input {
-            display: none;
-        }
-
-        .carousel-indicators label {
-            width: 12px;
-            height: 12px;
-            background: rgba(255, 255, 255, 0.5); /* Semi-transparent radio buttons */
-            display: inline-block;
-            border-radius: 50%;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-        }
-
-        .carousel-indicators input:checked + label {
-            background: white;
-            opacity: 1; /* Full opacity for active button */
-        }
     </style>
 </head>
 
@@ -161,17 +131,11 @@
         function createImageCarousel(images, postIndex) {
             if (images.length === 0) return ''; // No images, no carousel
 
-            const indicators = images.map((_, i) =>
-                `<input type="radio" name="carousel-${postIndex}" id="slide-${postIndex}-${i}" ${i === 0 ? 'checked' : ''}>
-                 <label for="slide-${postIndex}-${i}" onclick="changeSlide(${postIndex}, ${i})"></label>`
-            ).join('');
-
             return `
                 <div class="carousel" id="carousel-${postIndex}">
                     ${images.map((img, index) => `<img src="${img}" class="${index === 0 ? 'active' : ''}" id="carousel-${postIndex}-img-${index}">`).join('')}
                     <button class="carousel-btn prev" onclick="prevSlide(${postIndex})">❮</button>
                     <button class="carousel-btn next" onclick="nextSlide(${postIndex})">❯</button>
-                    <div class="carousel-indicators" id="indicators-${postIndex}">${indicators}</div>
                 </div>
             `;
         }
@@ -197,46 +161,20 @@
 
         function prevSlide(postIndex) {
             const images = document.querySelectorAll(`#carousel-${postIndex} img`);
-            const indicatorsContainer = document.getElementById(`indicators-${postIndex}`);
             let activeIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
 
             images[activeIndex].classList.remove('active');
             activeIndex = (activeIndex - 1 + images.length) % images.length;
             images[activeIndex].classList.add('active');
-
-            updateIndicators(postIndex, activeIndex, images.length);
         }
 
         function nextSlide(postIndex) {
             const images = document.querySelectorAll(`#carousel-${postIndex} img`);
-            const indicatorsContainer = document.getElementById(`indicators-${postIndex}`);
             let activeIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
 
             images[activeIndex].classList.remove('active');
             activeIndex = (activeIndex + 1) % images.length;
             images[activeIndex].classList.add('active');
-
-            updateIndicators(postIndex, activeIndex, images.length);
-        }
-
-        function updateIndicators(postIndex, activeIndex, totalImages) {
-            const indicatorsContainer = document.getElementById(`indicators-${postIndex}`);
-            const start = activeIndex;
-            const end = (activeIndex + 10) > totalImages ? totalImages : activeIndex + 10;
-
-            const indicators = Array.from({ length: totalImages }, (_, i) =>
-                `<input type="radio" name="carousel-${postIndex}" id="slide-${postIndex}-${i}" ${i === activeIndex ? 'checked' : ''}>
-                 <label for="slide-${postIndex}-${i}" onclick="changeSlide(${postIndex}, ${i})"></label>`
-            ).slice(start, end).join('');
-
-            indicatorsContainer.innerHTML = indicators;
-        }
-
-        function changeSlide(postIndex, slideIndex) {
-            const images = document.querySelectorAll(`#carousel-${postIndex} img`);
-            images.forEach(img => img.classList.remove('active'));
-            images[slideIndex].classList.add('active');
-            updateIndicators(postIndex, slideIndex, images.length);
         }
 
         setInterval(fetchRSS, 30000); // Refresh every 30 seconds
