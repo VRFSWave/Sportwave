@@ -5,34 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sportwave News</title>
-    
+
     <!-- Prevent Caching -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-
-    <!-- Disable local storage, cookies, and cache in modern browsers -->
-    <script>
-        // Disable localStorage and sessionStorage
-        Object.defineProperty(window, 'localStorage', { value: null });
-        Object.defineProperty(window, 'sessionStorage', { value: null });
-
-        // Clear cache and prevent service workers from caching
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                for (let registration of registrations) {
-                    registration.unregister();
-                }
-            });
-        }
-
-        // Clear cookies
-        document.cookie.split(";").forEach((c) => {
-            document.cookie = c
-                .replace(/^ +/, "")
-                .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
-        });
-    </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -54,15 +31,6 @@
         h1 {
             text-align: center;
             font-size: 3rem;
-        }
-
-        #search {
-            width: 100%;
-            padding: 0.8rem;
-            margin-bottom: 2rem;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
         }
 
         .news-item {
@@ -87,10 +55,9 @@
         }
 
         .carousel {
-            display: flex;
-            overflow: hidden;
             position: relative;
             width: 100%;
+            overflow: hidden;
         }
 
         .carousel img {
@@ -120,13 +87,35 @@
         .next {
             right: 10px;
         }
+
+        .carousel-indicators {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .carousel-indicators input {
+            display: none;
+        }
+
+        .carousel-indicators label {
+            width: 12px;
+            height: 12px;
+            background: gray;
+            display: inline-block;
+            border-radius: 50%;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .carousel-indicators input:checked + label {
+            background: white;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h1>Sportwave News</h1>
-        <input type="text" id="search" placeholder="Search News by Title...">
         <div id="news-container"></div>
     </div>
 
@@ -135,16 +124,8 @@
 
         async function fetchRSS() {
             try {
-                // Ensure the request is fresh by appending a cache-busting query
                 const noCacheUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssFeedUrl)}&nocache=${new Date().getTime()}`;
-                const response = await fetch(noCacheUrl, {
-                    cache: 'no-store',
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    }
-                });
+                const response = await fetch(noCacheUrl, { cache: 'no-store' });
                 const data = await response.json();
                 displayNews(data.items);
             } catch (error) {
@@ -160,6 +141,7 @@
                 const urlMatch = imgTag.match(/src="([^"]+)"/);
                 if (urlMatch) {
                     let imageUrl = urlMatch[1];
+                    // Ensure only high-quality images (replace size with /s1920/)
                     imageUrl = imageUrl.replace(/\/s\d+\//, '/s1920/');
                     imageUrls.push(imageUrl);
                 }
@@ -168,14 +150,20 @@
             return imageUrls;
         }
 
-        function createImageCarousel(images) {
-            if (images.length <= 1) return '';
+        function createImageCarousel(images, postIndex) {
+            if (images.length === 0) return ''; // No images, no carousel
+
+            let indicators = images.map((_, i) =>
+                `<input type="radio" name="carousel-${postIndex}" id="slide-${postIndex}-${i}" ${i === 0 ? 'checked' : ''}>
+                 <label for="slide-${postIndex}-${i}" onclick="changeSlide(${postIndex}, ${i})"></label>`
+            ).join('');
 
             return `
-                <div class="carousel">
-                    ${images.map((img, index) => `<img src="${img}" class="${index === 0 ? 'active' : ''}" alt="news image">`).join('')}
-                    <button class="carousel-btn prev" onclick="prevSlide(this)">❮</button>
-                    <button class="carousel-btn next" onclick="nextSlide(this)">❯</button>
+                <div class="carousel" id="carousel-${postIndex}">
+                    ${images.map((img, index) => `<img src="${img}" class="${index === 0 ? 'active' : ''}" id="carousel-${postIndex}-img-${index}">`).join('')}
+                    <button class="carousel-btn prev" onclick="prevSlide(${postIndex})">❮</button>
+                    <button class="carousel-btn next" onclick="nextSlide(${postIndex})">❯</button>
+                    <div class="carousel-indicators">${indicators}</div>
                 </div>
             `;
         }
@@ -184,16 +172,14 @@
             const container = document.getElementById('news-container');
             container.innerHTML = '';
 
-            items.forEach(item => {
+            items.forEach((item, index) => {
+                const images = extractImagesFromDescription(item.description);
                 const newsItem = document.createElement('div');
                 newsItem.className = 'news-item';
 
-                const images = extractImagesFromDescription(item.description);
-                const carousel = createImageCarousel(images);
-
                 newsItem.innerHTML = `
                     <h2>${item.title}</h2>
-                    ${carousel}
+                    ${createImageCarousel(images, index)}
                     <a href="${item.link}" target="_blank">Read More</a>
                 `;
 
@@ -201,31 +187,38 @@
             });
         }
 
-        function prevSlide(button) {
-            const carousel = button.parentElement;
-            const images = carousel.querySelectorAll('img');
+        function prevSlide(postIndex) {
+            const images = document.querySelectorAll(`#carousel-${postIndex} img`);
             let activeIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
 
             images[activeIndex].classList.remove('active');
             activeIndex = (activeIndex - 1 + images.length) % images.length;
             images[activeIndex].classList.add('active');
+
+            document.getElementById(`slide-${postIndex}-${activeIndex}`).checked = true;
         }
 
-        function nextSlide(button) {
-            const carousel = button.parentElement;
-            const images = carousel.querySelectorAll('img');
+        function nextSlide(postIndex) {
+            const images = document.querySelectorAll(`#carousel-${postIndex} img`);
             let activeIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
 
             images[activeIndex].classList.remove('active');
             activeIndex = (activeIndex + 1) % images.length;
             images[activeIndex].classList.add('active');
+
+            document.getElementById(`slide-${postIndex}-${activeIndex}`).checked = true;
         }
 
-        // Refresh every 30 seconds without cache
-        setInterval(fetchRSS, 30000);
+        function changeSlide(postIndex, slideIndex) {
+            const images = document.querySelectorAll(`#carousel-${postIndex} img`);
+            images.forEach(img => img.classList.remove('active'));
+            images[slideIndex].classList.add('active');
+        }
 
+        setInterval(fetchRSS, 30000); // Refresh every 30 seconds
         fetchRSS();
     </script>
+
 </body>
 
 </html>
