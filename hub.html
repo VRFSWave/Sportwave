@@ -111,15 +111,13 @@
         }
 
         function formatDate(dateString) {
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
+            const [day, month, year] = dateString.split('/');
             return `${day}/${month}/${year}`;
         }
 
         function startCountdown(eventDate, elementId) {
-            const targetDate = new Date(eventDate).getTime();
+            const [day, month, year] = eventDate.split('/');
+            const targetDate = new Date(`${year}-${month}-${day}`).getTime();
 
             function updateTimer() {
                 const now = new Date().getTime();
