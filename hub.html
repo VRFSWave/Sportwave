@@ -85,8 +85,8 @@
                 const rows = csvText.trim().split('\n').slice(1);
                 const events = rows.map(row => {
                     const columns = row.split(',').map(item => item.replace(/^"|"$/g, ''));
-                    const [id, title, date, thumbnail] = columns;
-                    return { id, title, date: formatDate(date), thumbnail };
+                    const [id, title, date, time, thumbnail] = columns;
+                    return { id, title, date: formatDate(date), time, thumbnail };
                 });
 
                 const container = document.getElementById('events-container');
@@ -98,12 +98,12 @@
                     eventElement.innerHTML = `
                         <img src="${event.thumbnail}" alt="${event.title}">
                         <p><strong>${event.title}</strong></p>
-                        <p>${event.date}</p>
+                        <p>${event.date} at ${event.time}</p>
                         <div class="countdown" id="countdown-${event.id}">Loading...</div>
                     `;
                     container.appendChild(eventElement);
 
-                    startCountdown(event.date, `countdown-${event.id}`);
+                    startCountdown(event.date, event.time, `countdown-${event.id}`);
                 });
             } catch (error) {
                 console.error('Error loading events:', error);
@@ -115,9 +115,10 @@
             return `${day}/${month}/${year}`;
         }
 
-        function startCountdown(eventDate, elementId) {
+        function startCountdown(eventDate, eventTime, elementId) {
             const [day, month, year] = eventDate.split('/');
-            const targetDate = new Date(`${year}-${month}-${day}`).getTime();
+            const [hour, minute] = eventTime.split(':');
+            const targetDate = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`).getTime();
 
             function updateTimer() {
                 const now = new Date().getTime();
