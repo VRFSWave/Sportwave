@@ -41,22 +41,6 @@
             font-weight: 600;
         }
 
-        .twitch-link a {
-            text-decoration: none;
-            color: #FF6F61;
-            font-size: 1.2rem;
-            font-weight: 600;
-            border: 2px solid #FF6F61;
-            padding: 10px 20px;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-        }
-
-        .twitch-link a:hover {
-            background-color: #FF6F61;
-            color: white;
-        }
-
         #twitch-embed {
             margin-top: 20px;
             width: 100%;
@@ -142,9 +126,6 @@
     <div class="container">
         <h1>Watch My Twitch Stream</h1>
         <div id="twitch-embed"></div>
-        <div class="twitch-link">
-            <a href="https://www.twitch.tv/sportwavelive" target="_blank">Watch on Twitch</a>
-        </div>
 
         <h2>Upcoming Events</h2>
         <div class="events" id="events-container">
@@ -210,10 +191,17 @@
             const [day, month, year] = eventDate.split('/');
             const [hour, minute] = eventTime.split(':');
             const targetDate = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`).getTime();
+            const endDate = targetDate + (2 * 60 * 60 * 1000);  // 2 hours after the event time
 
             function updateTimer() {
                 const now = new Date().getTime();
                 const timeLeft = targetDate - now;
+                const timePassed = now - endDate;
+
+                if (timePassed > 0) {
+                    document.getElementById(elementId).textContent = 'Finished';
+                    return;
+                }
 
                 if (timeLeft <= 0) {
                     document.getElementById(elementId).textContent = 'LIVE NOW!';
