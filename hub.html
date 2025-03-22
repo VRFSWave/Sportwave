@@ -52,12 +52,18 @@
             border-radius: 15px;
         }
 
-        .events {
+        .carousel-container {
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 40px;
+            align-items: center;
+            position: relative;
             margin-top: 50px;
+        }
+
+        .carousel {
+            display: flex;
+            overflow: hidden;
+            width: 80%;
         }
 
         .event {
@@ -66,6 +72,7 @@
             width: 300px;
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
             cursor: pointer;
+            margin: 0 10px;
         }
 
         .event:hover {
@@ -109,6 +116,25 @@
             font-size: 1.2rem;
         }
 
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .arrow-left {
+            left: 0;
+        }
+
+        .arrow-right {
+            right: 0;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -133,8 +159,13 @@
         <div id="twitch-embed"></div>
 
         <h2>Upcoming Events</h2>
-        <div class="events" id="events-container">
-            <!-- Events will load here -->
+
+        <div class="carousel-container">
+            <div class="arrow arrow-left" onclick="moveCarousel('left')">❮</div>
+            <div class="carousel" id="events-container">
+                <!-- Events will load here -->
+            </div>
+            <div class="arrow arrow-right" onclick="moveCarousel('right')">❯</div>
         </div>
     </div>
 
@@ -163,10 +194,13 @@
                     return { id, title, date: formatDate(date), time, location, thumbnail };
                 });
 
+                // Sort events to have the future events first
+                const sortedEvents = events.sort((a, b) => new Date(`${a.date} ${a.time}`) - new Date(`${b.date} ${b.time}`));
+
                 const container = document.getElementById('events-container');
                 container.innerHTML = '';
 
-                events.forEach(event => {
+                sortedEvents.forEach(event => {
                     const eventElement = document.createElement('div');
                     eventElement.className = 'event';
                     eventElement.innerHTML = `
@@ -223,6 +257,22 @@
 
             updateTimer();
             setInterval(updateTimer, 1000);
+        }
+
+        let currentIndex = 0;
+
+        function moveCarousel(direction) {
+            const carousel = document.getElementById('events-container');
+            const eventWidth = document.querySelector('.event').offsetWidth + 20; // Including margins
+            const totalEvents = document.querySelectorAll('.event').length;
+
+            if (direction === 'left' && currentIndex > 0) {
+                currentIndex--;
+            } else if (direction === 'right' && currentIndex < totalEvents - 4) {
+                currentIndex++;
+            }
+
+            carousel.style.transform = `translateX(-${currentIndex * eventWidth}px)`;
         }
 
         loadEvents();
