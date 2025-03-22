@@ -41,6 +41,11 @@
             margin-top: 10px;
             color: #ff4c4c;
         }
+        .location {
+            font-style: italic;
+            margin-top: 5px;
+            color: #bbb;
+        }
         .twitch-link {
             margin-top: 20px;
         }
@@ -85,8 +90,8 @@
                 const rows = csvText.trim().split('\n').slice(1);
                 const events = rows.map(row => {
                     const columns = row.split(',').map(item => item.replace(/^"|"$/g, ''));
-                    const [id, title, date, time, thumbnail] = columns;
-                    return { id, title, date: formatDate(date), time, thumbnail };
+                    const [id, title, date, time, location, thumbnail] = columns;
+                    return { id, title, date: formatDate(date), time, location, thumbnail };
                 });
 
                 const container = document.getElementById('events-container');
@@ -98,6 +103,7 @@
                     eventElement.innerHTML = `
                         <img src="${event.thumbnail}" alt="${event.title}">
                         <p><strong>${event.title}</strong></p>
+                        <p class="location">${event.location}</p>
                         <p>${event.date} at ${event.time}</p>
                         <div class="countdown" id="countdown-${event.id}">Loading...</div>
                     `;
