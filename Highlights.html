@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sportwave Video Gallery</title>
+
+    <!-- Prevent Caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #121212;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+        }
+
+        .news-item {
+            background: #1e1e1e;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .news-item h2 {
+            font-size: 1.8rem;
+        }
+
+        .news-item a {
+            color: #00bcd4;
+            text-decoration: none;
+        }
+
+        .news-item a:hover {
+            text-decoration: underline;
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .carousel iframe {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        .carousel iframe.active {
+            display: block;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Sportwave Video Gallery</h1>
+        <div id="news-container"></div>
+    </div>
+
+    <script>
+        const rssFeedUrl = 'https://sportwavevideos.blogspot.com/feeds/posts/default';
+
+        // Fetch RSS and prevent caching issues
+        async function fetchRSS() {
+            try {
+                // Force fresh data using a unique timestamp to bypass cache
+                const noCacheUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssFeedUrl)}&nocache=${Date.now()}`;
+                const response = await fetch(noCacheUrl, { cache: 'no-store' });
+                const data = await response.json();
+
+                // Ensure only valid posts (filter deleted/empty ones)
+                const validPosts = data.items.filter(item => item.link && item.title);
+
+                displayNews(validPosts);
+            } catch (error) {
+                console.error('Error fetching RSS feed:', error);
+            }
+        }
+
+        // Extract video URLs (look for embedded iframe URLs like YouTube, Vimeo, etc.)
+        function extractVideosFromDescription(description) {
+            const videoUrls = [];
+            // Match iframe URLs from sources like YouTube, Vimeo, etc.
+            const iframeTags = description.match(/<iframe[^>]+src="([^"]+)"[^>]*>/g) || [];
+
+            iframeTags.forEach(iframeTag => {
+                const urlMatch = iframeTag.match(/src="([^"]+)"/);
+                if (urlMatch) {
+                    videoUrls.push(urlMatch[1]);
+                }
+            });
+
+            return videoUrls;
+        }
+
+        // Create carousel with videos for each post
+        function createVideoCarousel(videos, postIndex) {
+            if (videos.length === 0) return ''; // No videos, no carousel
+
+            return `
+                <div class="carousel" id="carousel-${postIndex}">
+                    ${videos.map((video, index) => `
+                        <iframe class="${index === 0 ? 'active' : ''}" id="carousel-${postIndex}-video-${index}" src="${video}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    `).join('')}
+                    <button class="carousel-btn prev" onclick="prevSlide(${postIndex})">❮</button>
+                    <button class="carousel-btn next" onclick="nextSlide(${postIndex})">❯</button>
+                </div>
+            `;
+        }
+
+        // Display news items dynamically
+        function displayNews(items) {
+            const container = document.getElementById('news-container');
+            container.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const videos = extractVideosFromDescription(item.description);
+                const newsItem = document.createElement('div');
+                newsItem.className = 'news-item';
+
+                newsItem.innerHTML = `
+                    <h2>${item.title}</h2>
+                    ${createVideoCarousel(videos, index)}
+                    <a href="${item.link}" target="_blank">Read More</a>
+                `;
+
+                container.appendChild(newsItem);
+            });
+        }
+
+        // Carousel Navigation: Go to the previous video
+        function prevSlide(postIndex) {
+            const videos = document.querySelectorAll(`#carousel-${postIndex} iframe`);
+            let activeIndex = Array.from(videos).findIndex(video => video.classList.contains('active'));
+
+            videos[activeIndex].classList.remove('active');
+            activeIndex = (activeIndex - 1 + videos.length) % videos.length;
+            videos[activeIndex].classList.add('active');
+        }
+
+        // Carousel Navigation: Go to the next video
+        function nextSlide(postIndex) {
+            const videos = document.querySelectorAll(`#carousel-${postIndex} iframe`);
+            let activeIndex = Array.from(videos).findIndex(video => video.classList.contains('active'));
+
+            videos[activeIndex].classList.remove('active');
+            activeIndex = (activeIndex + 1) % videos.length;
+            videos[activeIndex].classList.add('active');
+        }
+
+        // Auto-update every 30 seconds to fetch fresh content
+        setInterval(fetchRSS, 30000);
+
+        // Initial load
+        fetchRSS();
+    </script>
+
+</body>
+
+</html>
