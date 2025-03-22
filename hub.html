@@ -228,38 +228,38 @@
             return `${day}/${month}/${year}`;
         }
 
-        function startCountdown(eventDate, eventTime, elementId) {
-            const [day, month, year] = eventDate.split('/');
-            const [hour, minute] = eventTime.split(':');
-            const targetDate = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`).getTime();
-            const endDate = targetDate + (2 * 60 * 60 * 1000);  // 2 hours after the event time
+function startCountdown(eventDate, eventTime, elementId) {
+        const [day, month, year] = eventDate.split('/');
+        const [hour, minute] = eventTime.split(':');
+        const targetDate = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`).getTime();
+        const endDate = targetDate + (1 * 60 * 60 * 1000);  // 1 hour after the event time (adjusted)
 
-            function updateTimer() {
-                const now = new Date().getTime();
-                const timeLeft = targetDate - now;
-                const timePassed = now - endDate;
+        function updateTimer() {
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
+            const timePassed = now - endDate;
 
-                if (timePassed > 0) {
-                    document.getElementById(elementId).textContent = 'Finished';
-                    return;
-                }
-
-                if (timeLeft <= 0) {
-                    document.getElementById(elementId).textContent = 'LIVE NOW!';
-                    return;
-                }
-
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                document.getElementById(elementId).textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            if (timePassed > 0) {
+                document.getElementById(elementId).textContent = 'Finished';
+                return;
             }
 
-            updateTimer();
-            setInterval(updateTimer, 1000);
+            if (timeLeft <= 0) {
+                document.getElementById(elementId).textContent = 'LIVE NOW!';
+                return;
+            }
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById(elementId).textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
         }
+
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    }
 
         let currentIndex = 0;
 
