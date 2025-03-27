@@ -19,53 +19,41 @@
             font-family: 'League Spartan', sans-serif;
             background: #1b1b1b url('https://i.ibb.co/S4WYbtn6/image.png') no-repeat center center/cover;
             color: white;
-            transition: background 1s ease;
             overflow-x: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding-top: 20px; /* To prevent cutting off */
         }
 
         .container {
-            width: 90%;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: auto;
+            padding: 30px;
             text-align: center;
         }
 
         h1 {
             font-size: 3rem;
-            color: #FF6F61; /* Default color */
+            color: #FF6F61;
             margin-bottom: 20px;
+        }
+
+        #twitch-embed {
+            margin-top: 20px;
+            width: 1140px;
+            height: 500px;
+            border-radius: 15px;
         }
 
         h2 {
             font-size: 2.2rem;
             margin: 40px 0 20px;
-            color: #FF6F61; /* Default color */
+            color: #FF6F61;
         }
 
-        .carousel {
-            display: flex;
-            overflow: hidden;
-            position: relative;
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             justify-content: center;
             margin-top: 20px;
-        }
-
-        .carousel-inner {
-            display: flex;
-            transition: transform 0.5s ease;
-            justify-content: center;
-        }
-
-        .event {
-            flex: 0 0 25%; /* Adjusted to fit 4 events at a time */
-            padding: 10px;
-            box-sizing: border-box;
-            margin: 0 10px;
         }
 
         .event-card {
@@ -112,51 +100,21 @@
             color: #FF6F61;
             margin-top: 10px;
         }
-
-        .arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 3rem;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .arrow-left {
-            left: 0;
-        }
-
-        .arrow-right {
-            right: 0;
-        }
-
-        @media (max-width: 768px) {
-            .event {
-                flex: 0 0 100%;
-            }
-        }
-
     </style>
 </head>
 
 <body>
     <div class="container">
         <h1>Sportwave Hub</h1>
-
         <div id="twitch-embed"></div>
-
         <h2>Upcoming Events</h2>
-        <div class="carousel" id="carousel">
-            <div class="arrow arrow-left" onclick="prevSlide()">&#8249;</div>
-            <div class="carousel-inner" id="events-container"></div>
-            <div class="arrow arrow-right" onclick="nextSlide()">&#8250;</div>
-        </div>
+        <div class="events-grid" id="events-container"></div>
     </div>
 
     <script>
         new Twitch.Embed("twitch-embed", {
-            width: "1140",
-            height: "500",
+            width: "100%",
+            height: "100%",
             channel: "sportwavelive",
             layout: "video",
             autoplay: true,
@@ -166,8 +124,6 @@
         const SHEET_ID = '1l0Tn9g9cXmQo8-xKOTnMNb_aJ-s9QOJbSrghOyRlvJA';
         const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
 
-        let slideIndex = 0;
-
         async function loadEvents() {
             try {
                 const response = await fetch(SHEET_URL);
@@ -176,127 +132,50 @@
                 const rows = csvText.trim().split('\n').slice(1);
                 const events = rows.map(row => {
                     const columns = row.split(',').map(item => item.replace(/^"|"$/g, ''));
-                    const [id, title, date, time, location, thumbnail, background, h1Color, h2Color] = columns;
-                    return { id, title, date, time, location, thumbnail, background: background || '', h1Color: h1Color || '', h2Color: h2Color || '' };
-                });
-
-                // Separate upcoming and finished events
-                const now = new Date().getTime();
-                const upcomingEvents = events.filter(event => {
-                    const eventDate = new Date(`${event.date.split('/').reverse().join('-')}T${event.time}:00`).getTime();
-                    return eventDate > now;
-                });
-
-                const finishedEvents = events.filter(event => {
-                    const eventDate = new Date(`${event.date.split('/').reverse().join('-')}T${event.time}:00`).getTime();
-                    return eventDate <= now;
-                });
-
-                // Sort the upcoming events (ascending by date)
-                upcomingEvents.sort((a, b) => {
-                    const dateA = new Date(`${a.date.split('/').reverse().join('-')}T${a.time}:00`).getTime();
-                    const dateB = new Date(`${b.date.split('/').reverse().join('-')}T${b.time}:00`).getTime();
+                    const [id, title, date, time, location, thumbnail] = columns;
+                    return { id, title, date, time, location, thumbnail };
+                }).sort((a, b) => {
+                    const dateA = new Date(a.date.split('/').reverse().join('-') + 'T' + a.time);
+                    const dateB = new Date(b.date.split('/').reverse().join('-') + 'T' + b.time);
                     return dateA - dateB;
                 });
 
-                // Finished events should be displayed last, but still sorted by date
-                finishedEvents.sort((a, b) => {
-                    const dateA = new Date(`${a.date.split('/').reverse().join('-')}T${a.time}:00`).getTime();
-                    const dateB = new Date(`${b.date.split('/').reverse().join('-')}T${b.time}:00`).getTime();
-                    return dateA - dateB;
-                });
-
-                // Combine the events: first upcoming, then finished
-                const allEvents = [...upcomingEvents, ...finishedEvents];
-
+                const now = new Date();
                 const container = document.getElementById('events-container');
                 container.innerHTML = '';
 
-                allEvents.forEach(event => {
+                events.forEach(event => {
+                    const eventDate = new Date(event.date.split('/').reverse().join('-') + 'T' + event.time);
+                    let countdownText = '';
+                    const timeDiff = eventDate - now;
+                    const hours = Math.floor(timeDiff / 3600000);
+                    const minutes = Math.floor((timeDiff % 3600000) / 60000);
+                    const days = Math.floor(hours / 24);
+                    const remainingHours = hours % 24;
+
+                    if (timeDiff > 0) {
+                        countdownText = `Starts in: ${days}d ${remainingHours}h ${minutes}m`;
+                    } else if (now - eventDate < 3600000) {
+                        countdownText = 'LIVE NOW';
+                    } else {
+                        countdownText = 'FINISHED';
+                    }
+
                     const eventElement = document.createElement('div');
-                    eventElement.className = 'event';
+                    eventElement.className = 'event-card';
                     eventElement.innerHTML = `
-                        <div class="event-card">
-                            <img src="${event.thumbnail}" alt="${event.title}">
-                            <div class="event-info">
-                                <h3>${event.title}</h3>
-                                <p>${event.date} at ${event.time}</p>
-                                <p class="location">${event.location}</p>
-                                <div class="countdown" id="countdown-${event.id}">Loading...</div>
-                            </div>
+                        <img src="${event.thumbnail}" alt="${event.title}">
+                        <div class="event-info">
+                            <h3>${event.title}</h3>
+                            <p>${event.date} at ${event.time}</p>
+                            <p class="location">${event.location}</p>
+                            <p class="countdown">${countdownText}</p>
                         </div>`;
                     container.appendChild(eventElement);
-                    startCountdown(event.date, event.time, event.background, event.h1Color, event.h2Color, `countdown-${event.id}`);
                 });
-
-                // Set carousel to start at the first event
-                slideIndex = 0;
-                updateSlide();
-
             } catch (error) {
                 console.error('Error loading events:', error);
             }
-        }
-
-        function startCountdown(eventDate, eventTime, backgroundImage, h1Color, h2Color, elementId) {
-            const [day, month, year] = eventDate.split('/');
-            const [hour, minute] = eventTime.split(':');
-            const targetDate = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`).getTime();
-            const oneHourAfter = targetDate + (60 * 60 * 1000);
-            const oneHourBefore = targetDate - (60 * 60 * 1000);
-
-            function updateTimer() {
-                const now = new Date().getTime();
-
-                // Change background 1 hour before event
-                if (now >= oneHourBefore && now < targetDate) {
-                    document.body.style.backgroundImage = `url(${backgroundImage})`;
-                } else if (now >= targetDate && now < oneHourAfter) {
-                    document.body.style.backgroundImage = 'url(https://i.ibb.co/S4WYbtn6/image.png)';
-                }
-
-                // Change colors of h1 and h2 1 hour before the event
-                if (now >= oneHourBefore && now < targetDate) {
-                    document.querySelector('h1').style.color = h1Color || '#FF6F61';  // Default color if empty
-                    document.querySelector('h2').style.color = h2Color || '#FF6F61';  // Default color if empty
-                } else if (now >= targetDate && now < oneHourAfter) {
-                    document.querySelector('h1').style.color = '#FF6F61'; // Reset to default color
-                    document.querySelector('h2').style.color = '#FF6F61'; // Reset to default color
-                }
-
-                const timeRemaining = targetDate - now;
-                if (now >= oneHourAfter) {
-                    document.getElementById(elementId).textContent = 'Finished';
-                } else if (timeRemaining <= 0) {
-                    document.getElementById(elementId).textContent = 'LIVE NOW!';
-                } else {
-                    const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
-                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-                    document.getElementById(elementId).textContent = `${hours}h ${minutes}m`;
-                }
-            }
-
-            updateTimer();
-            setInterval(updateTimer, 1000);
-        }
-
-        function nextSlide() { 
-            if (slideIndex < document.querySelectorAll('.event').length - 4) {
-                slideIndex++;
-                updateSlide();
-            }
-        }
-
-        function prevSlide() { 
-            if (slideIndex > 0) {
-                slideIndex--;
-                updateSlide();
-            }
-        }
-
-        function updateSlide() {
-            const carouselInner = document.querySelector('.carousel-inner');
-            carouselInner.style.transform = `translateX(-${slideIndex * 25}%)`; /* Adjusted for 4 events */
         }
 
         loadEvents();
