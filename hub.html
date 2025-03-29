@@ -35,11 +35,13 @@
             margin-bottom: 20px;
         }
 
-        #twitch-embed {
+        #twitch-container {
             margin-top: 20px;
-            width: 1140px;
-            height: 500px;
+            width: 100%; /* Ensure the container takes full width */
+            height: 500px; /* Set the height of the container to 500px */
             border-radius: 15px;
+            background: #000;
+            position: relative;
         }
 
         h2 {
@@ -95,10 +97,23 @@
             color: #aaa;
         }
 
-        .countdown {
-            font-weight: 600;
-            color: #FF6F61;
-            margin-top: 10px;
+        .channel-buttons {
+            margin-top: 20px;
+        }
+
+        .channel-button {
+            background-color: #FF6F61;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            margin: 0 5px;
+            cursor: pointer;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .channel-button:hover {
+            background-color: #ff3d32;
         }
     </style>
 </head>
@@ -106,21 +121,59 @@
 <body>
     <div class="container">
         <h1>Sportwave Hub</h1>
-        <div id="twitch-embed"></div>
+
+        <!-- Container for Twitch player -->
+        <div id="twitch-container"></div>
+
+        <div class="channel-buttons">
+            <button class="channel-button" onclick="changeChannel('sportwavelive')">Sportwave Live</button>
+            <button class="channel-button" onclick="changeChannel('anotherchannel')">Another Channel</button>
+            <button class="channel-button" onclick="changeChannel('yetanotherchannel')">Yet Another Channel</button>
+        </div>
+
         <h2>Upcoming Events</h2>
         <div class="events-grid" id="events-container"></div>
     </div>
 
     <script>
-        new Twitch.Embed("twitch-embed", {
-            width: "100%",
-            height: "100%",
-            channel: "sportwavelive",
-            layout: "video",
-            autoplay: true,
-            parent: ["vrfswave.github.io"]
-        });
+        // Default channel
+        let currentChannel = 'sportwavelive';
 
+        // Function to initialize the Twitch embed player
+        function initializeTwitchEmbed(channelName) {
+            // Check if an embed exists
+            const existingEmbed = document.getElementById("twitch-embed");
+            if (existingEmbed) {
+                existingEmbed.remove(); // Remove any existing embed
+            }
+
+            const twitchContainer = document.getElementById("twitch-container");
+
+            // Create a new Twitch embed element
+            const twitchEmbed = document.createElement("div");
+            twitchEmbed.id = "twitch-embed";
+
+            // Append the new embed to the container
+            twitchContainer.appendChild(twitchEmbed);
+
+            // Initialize the new embed
+            new Twitch.Embed("twitch-embed", {
+                width: "100%",
+                height: "500px", // Set the height to 500px for the embed
+                channel: channelName,
+                layout: "video",
+                autoplay: true,
+                parent: ["vrfswave.github.io"]
+            });
+        }
+
+        // Change channel when a button is clicked
+        function changeChannel(channelName) {
+            currentChannel = channelName;
+            initializeTwitchEmbed(channelName);
+        }
+
+        // Load events from Google Sheets
         const SHEET_ID = '1l0Tn9g9cXmQo8-xKOTnMNb_aJ-s9QOJbSrghOyRlvJA';
         const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
 
@@ -128,57 +181,46 @@
             try {
                 const response = await fetch(SHEET_URL);
                 const csvText = await response.text();
+
                 const rows = csvText.trim().split('\n').slice(1);
+                const events = rows.map(row => {
+                    const columns = row.split(',').map(item => item.replace(/^"|"$/g, ''));
+                    const [id, title, date, time, location, thumbnail] = columns;
+                    return { id, title, date, time, location, thumbnail };
+                }).sort((a, b) => {
+                    const dateA = new Date(a.date.split('/').reverse().join('-') + 'T' + a.time);
+                    const dateB = new Date(b.date.split('/').reverse().join('-') + 'T' + b.time);
+                    return dateA - dateB;
+                });
+
                 const now = new Date();
                 const container = document.getElementById('events-container');
                 container.innerHTML = '';
 
-                const events = rows.map(row => {
-                    const columns = row.split(',').map(item => item.replace(/^"|"$/g, ''));
-                    const [id, title, date, time, location, thumbnail, background] = columns;
-                    const eventDate = new Date(date.split('/').reverse().join('-') + 'T' + time);
-                    return { id, title, eventDate, location, thumbnail, background };
-                }).sort((a, b) => a.eventDate - b.eventDate);
-
-                let activeBackground = 'https://i.ibb.co/S4WYbtn6/image.png';
                 events.forEach(event => {
-                    const timeDiff = event.eventDate - now;
-                    const hours = Math.floor(timeDiff / 3600000);
-                    const minutes = Math.floor((timeDiff % 3600000) / 60000);
-                    const days = Math.floor(hours / 24);
-                    const remainingHours = hours % 24;
-                    let countdownText = '';
+                    const eventDate = new Date(event.date.split('/').reverse().join('-') + 'T' + event.time);
 
-                    if (timeDiff > 0) {
-                        countdownText = `Starts in: ${days}d ${remainingHours}h ${minutes}m`;
-                        if (timeDiff <= 3600000) {
-                            activeBackground = event.background || activeBackground;
-                        }
-                    } else if (now - event.eventDate < 3600000) {
-                        countdownText = 'LIVE NOW';
-                        activeBackground = event.background || activeBackground;
-                    } else {
-                        countdownText = 'FINISHED';
-                    }
-
+                    // Create event element
                     const eventElement = document.createElement('div');
                     eventElement.className = 'event-card';
                     eventElement.innerHTML = `
                         <img src="${event.thumbnail}" alt="${event.title}">
                         <div class="event-info">
                             <h3>${event.title}</h3>
-                            <p>${event.eventDate.toLocaleDateString()} at ${event.eventDate.toLocaleTimeString()}</p>
+                            <p>${event.date} at ${event.time}</p>
                             <p class="location">${event.location}</p>
-                            <p class="countdown">${countdownText}</p>
                         </div>`;
                     container.appendChild(eventElement);
                 });
-                document.body.style.background = `#1b1b1b url('${activeBackground}') no-repeat center center/cover`;
             } catch (error) {
                 console.error('Error loading events:', error);
             }
         }
 
+        // Call the function to initialize the Twitch player with the default channel
+        initializeTwitchEmbed(currentChannel);
+
+        // Load the events from Google Sheets
         loadEvents();
     </script>
 </body>
