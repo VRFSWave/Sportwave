@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Upcoming Games</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #111;
+      color: #fff;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .card {
+      background-color: #1a1a1a;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card img {
+      width: 100%;
+      display: block;
+      height: auto;
+    }
+
+    .card-caption {
+      padding: 15px;
+      text-align: center;
+      font-size: 1.1rem;
+      background-color: #222;
+    }
+  </style>
+</head>
+<body>
+  <h1>Upcoming Games</h1>
+  <div class="gallery">
+    <div class="card">
+      <img src="upcoming1.jpg" alt="Upcoming Game 1">
+      <div class="card-caption">Upcoming 1</div>
+    </div>
+    <div class="card">
+      <img src="upcoming2.jpg" alt="Upcoming Game 2">
+      <div class="card-caption">Upcoming 2</div>
+    </div>
+    <div class="card">
+      <img src="upcoming3.jpg" alt="Upcoming Game 3">
+      <div class="card-caption">Upcoming 3</div>
+    </div>
+  </div>
+</body>
+</html>
